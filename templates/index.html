@@ -1,0 +1,91 @@
+{% extends "base_header.html" %}
+
+{% block title %}
+    优果园--首页
+{% endblock %}
+
+{% block head %}
+    <script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/static/js/slide.js"></script>
+{% endblock %}
+
+{% block cart %}
+    <div class="search_bar clearfix">
+		<a href="{% url 'index' %}" class="logo fl"><img src="/static/images/logo.png"></a>
+		<div class="sub_page_name fl"></div>
+		<div class="search_con fl">
+            <form action="{% url 'goods:search_detail' %}" method="get">
+                {% csrf_token %}
+                <input type="text" class="input_text fl" name="search" placeholder="搜索商品">
+			    <input type="submit" class="input_btn fr" name="" value="搜索">
+            </form>
+
+		</div>
+{#    购物车展示框#}
+        <div class="guest_cart fr">
+            <a href="{% url 'cart:cart' %}" class="cart_name fl">我的购物车</a>
+            <div class="goods_count fr" id="show_count">{{ cart_count }}</div>
+        </div>
+	</div>
+{% endblock %}
+
+{% block body %}
+    <div class="navbar_con">
+		<div class="navbar">
+			<h1 class="fl">全部商品分类</h1>
+			<ul class="navlist fl">
+                <li><a href="{% url 'index' %}">首页</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="center_con clearfix1">
+		<ul class="subnav fl">
+            {% for category,goods_list in new_goods_dict.items %}
+            <li><a href="{% url 'goods:list' category.id 'default' 1 %}" >{{ category.category_name }}</a></li>
+            {% endfor %}
+		</ul>
+		<div class="slide fl">
+			<ul class="slide_pics">
+                <li><a href="http://127.0.0.1:8000/goods/detail/5/"><img src="/static/images/banner1.jpg" alt="幻灯片" style="width: 100%;"></a></li>
+				<li><a href="http://127.0.0.1:8000/goods/detail/17/"><img src="/static/images/banner2.jpg" alt="幻灯片" style="width: 100%;"></a></li>
+				<li><a href="http://127.0.0.1:8000/goods/detail/4/"><img src="/static/images/banner3.jpg" alt="幻灯片" style="width: 100%;"></a></li>
+				<li><a href="http://127.0.0.1:8000/goods/detail/10/"><img src="/static/images/banner4.jpg" alt="幻灯片" style="width: 100%;"></a></li>
+
+			</ul>
+			<div class="prev"></div>
+			<div class="next"></div>
+			<ul class="points"></ul>
+		</div>
+		<div class="adv fl">
+			<a href="#"><img src="/static/images/adv01.jpg"></a>
+			<a href="#"><img src="/static/images/adv02.jpg"></a>
+		</div>
+	</div>
+    {% for category,goods_list in new_goods_dict.items %}
+        <div class="list_model">
+		<div class="list_title clearfix">
+			<h3 class="fl" id="model0{{ forloop.counter }}">{{ category.category_name }}</h3>
+			<div class="subtitle fl">
+				<span>|</span>
+                {% for good in goods_list %}
+                    <a href="{% url 'goods:detail' good.id  %}">{{ good.goods_name }}</a>
+                {% endfor %}
+			</div>
+			<a href="{% url 'goods:list' category.id 'default' 1 %}" class="goods_more fr" id="fruit_more">查看更多>>></a>
+		</div>
+        <div class="goods_con clearfix">
+            <div class="goods_banner fl"><img src="{{ category.image.url }}"></div>
+            <ul class="goods_list fl">
+                {% for goods in goods_list %}
+                <li>
+                    <h4><a href="{% url 'goods:detail' goods.id %}">{{ goods.goods_name }}</a></h4>
+                    <a href="{% url 'goods:detail' goods.id %}"><img src="{{ goods.pic.url }}"></a>
+                    <div class="prize">{{ goods.price }}</div>
+                </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+        </div>
+    {% endfor %}
+{% endblock %}

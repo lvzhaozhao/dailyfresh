@@ -1,0 +1,24 @@
+{% extends 'base_header.html' %}
+{% block head %}
+    <style type="text/css">
+    /* 清除浮动 */
+    .clearfix:before,.clearfix:after{content:"";display:table}
+    .clearfix:after{clear:both;}
+    .clearfix{zoom:1}
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="{% url 'user:info' %}" class="">· 个人信息</a></li>
+				<li><a href="{% url 'user:order' 1 %}" class="">· 全部订单</a></li>
+				<li><a href="{% url 'user:site' %}" class="">· 收货地址</a></li>
+			</ul>
+		</div>
+{#        输出用户中心右侧显示内容占位#}
+        {% block right_centent %}
+        {% endblock %}
+    </div>
+{% endblock %}

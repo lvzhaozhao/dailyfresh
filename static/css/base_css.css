@@ -1,0 +1,32 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /*!important 强制设置有限权限*/
+    margin-top: 70px!important;
+}
+
+ul {
+    list-style-type: none!important;
+}
+
+ul.navbar-right {
+    margin-right: 0;
+}
+
+html,body{
+    width: 100%;
+    height: 100%;
+}
+
+.mui-content{
+    background: url(../images/login.jpg) center center no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+div.login_register{
+    margin-top: 3em;
+}

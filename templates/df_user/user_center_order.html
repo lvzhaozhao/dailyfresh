@@ -1,0 +1,117 @@
+{% extends "df_user/base_user.html" %}
+
+{% block title %}
+    全部订单
+{% endblock %}
+
+{% block head %}
+    <style type="text/css">
+    /* 清除浮动 */
+    .clearfix:before,.clearfix:after{content:"";display:table}
+    .clearfix:after{clear:both;}
+    .clearfix{zoom:1}
+    </style>
+
+    <script>
+        status = $('.oper_btn').attr('data-status');
+        if(status=='待评价'){
+            $('.oper_btn').text('待评价')
+        }
+        $('.oper_btn').click(function () {
+            if(status=='待支付'){
+                csrfmiddlewaretoken = $('input[name="csrfmiddlewaretoken"]').val();
+                order_id = $(this).attr('data-id');
+                params = {csrfmiddlewaretoken, order_id};
+                $.post('/order/order/', params, function (data) {
+                    if(data.res==3){
+                        window.open(data.pay);
+                        $.post('/order/checkorder/', params, function (data) {
+                            if(data.res==3){
+                                alert('支付成功');
+                                location.reload()
+                            }
+                            else {
+                                alert(data.msg)
+                            }
+                        })
+                    }
+                    else {
+                        alert(data.msg)
+                    }
+                })
+            }
+            else {
+                alert('yizhifu')
+            }
+        })
+    </script>
+{% endblock %}
+
+{% block cart %}
+    <div class="search_bar clearfix">
+		<a href="{% url 'index' %}" class="logo fl"><img src="/static/images/logo.png"></a>
+		<div class="sub_page_name fl"></div>
+		<div class="search_con fl">
+			<form action="{% url 'goods:search_detail' %}" method="get">
+                {% csrf_token %}
+                <input type="text" class="input_text fl" name="search" placeholder="搜索商品">
+			    <input type="submit" class="input_btn fr" name="" value="搜索">
+            </form>
+		</div>
+{#    不可删除#}
+        <div class="guest_cart fr"></div>
+	</div>
+{% endblock %}
+
+{% block right_centent %}
+    <div class="right_content clearfix">
+    <h3 class="common_title2">全部订单</h3>
+    {% csrf_token %}
+    {% for orderinfo in page.object_list %}
+    <ul class="order_list_th w978 clearfix">
+        <li class="col01">{{orderinfo.create_time}}</li>
+        <li class="col02">订单号：{{orderinfo.time_stamp}}</li>
+
+        <li class="col02 stress">{{ orderinfo.status }}</li>
+    </ul>
+    <table class="order_list_table w980">
+        <tbody>
+        <tr>
+            <td width="55%">
+            {% for times in orderinfo.ps %}
+                <ul class="order_goods_list clearfix">
+                    <li class="col01"><img src="{{ times.goods.pic.url }}"></li>
+                    <li class="col02">{{times.goods.goods_name}}<em><span>{{times.goods.price}}</span>元/{{times.goods.unit}}g</em>
+                    </li>
+                    <li class="col03">{{times.number}}个</li>
+                    <li class="col04">{{ times.total }}</li>
+                </ul>
+            {% endfor %}
+            </td>
+            <td width="15%"><a href="javascript:void(0)" data-status="{{ orderinfo.status }}" data-id="{{ orderinfo.order_id }}" class="oper_btn">去支付</a></td>
+            <td width="15%"><a href="#" class="oper_btn">查看物流</a></td>
+        </tr>
+        </tbody>
+    </table>
+    {% endfor %}
+    <div class="pagenation">
+        <div class="pagenation">
+        {% if page.has_previous %}
+        <a href="{% url 'user:order' page.previous_page_number %}">上一页</a>
+        {% endif %}
+        {%for pindex in show_nums%}
+        <!--如果选择的是当前页，则标记为活动样式-->
+        {%if pindex == page.number%}
+        <a href="#" class="active">{{pindex}}</a>
+        {%else%}
+        <a href="{% url 'user:order' pindex %}">{{pindex}}</a>
+        {%endif%}
+        {%endfor%}
+        {% if page.has_next %}
+        <a href="{% url 'user:order' page.next_page_number %}">下一页></a>
+        {% endif %}
+    </div>
+    </div>
+</div>
+{% endblock %}
+

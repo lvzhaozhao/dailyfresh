@@ -1,0 +1,58 @@
+{% extends "df_user/base_user.html" %}
+
+{% block title %}
+    用户中心
+{% endblock %}
+
+{% block cart %}
+    <div class="search_bar clearfix">
+		<a href="{% url 'index' %}" class="logo fl"><img src="/static/images/logo02.png"></a>
+		<div class="sub_page_name fl"></div>
+		<div class="search_con fl">
+			<form action="{% url 'goods:search_detail' %}" method="get">
+                {% csrf_token %}
+                <input type="text" class="input_text fl" name="search" placeholder="搜索商品">
+			    <input type="submit" class="input_btn fr" name="" value="搜索">
+            </form>
+		</div>
+{#    不可删除#}
+        <div class="guest_cart fr"></div>
+	</div>
+{% endblock %}
+
+{% block right_centent %}
+		<div class="right_content clearfix">
+				<div class="info_con clearfix">
+				<h3 class="common_title2">基本信息</h3>
+						<ul class="user_info_list">
+                            {% if user.is_authenticated %}
+                                <li><span>用户名：</span>{{ user.username }}&nbsp;&nbsp;<a href="{% url 'user:change_nickname' %}?form={{ request.get_full_path }}">修改用户名</a></li>
+                                <li><span>联系方式：</span>{{ phone }}</li>
+							    <li><span>联系地址：</span>{{ address }}</li>
+                                <li><span>邮箱：</span>{% if user.email %}{{ user.email }}{% else %}未绑定<a href="{% url 'user:bind_email' %}?form={{ request.get_full_path }}">&nbsp;&nbsp;绑定邮箱</a>{% endif %}</li>
+                                <li><span>上一次登录的时间：</span>{{ user.last_login|date:"Y-m-d H:i:s" }}</li>
+                                </ul>
+                            {% else %}
+                                <span>未登录，跳转到首页......</span>
+                                <script type="text/javascript">
+                                    window.location.href = '/';
+                                </script>
+                            {% endif %}
+				</div>
+				<h3 class="common_title2">最近浏览</h3>
+				<div class="has_view_list">
+					<ul class="goods_type_list clearfix">
+                        {% for goods in goods_list %}
+                            <li>
+                                <a href="{% url 'goods:detail' goods.id %}"><img src="{{ goods.pic.url }}"></a>
+                                <h4>{{ goods.goods_name }}</h4>
+                            <div class="operate">
+                                <span class="prize">￥{{ goods.price }}</span>
+                                <span class="unit">{{ goods.price }}/{{ goods.unit }}</span>
+                            </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+        </div>
+{% endblock %}

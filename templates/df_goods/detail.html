@@ -1,0 +1,156 @@
+{% extends 'df_goods/base_goods.html' %}
+{% load staticfiles %}
+{% block head %}
+    <style type="text/css">
+    /* 清除浮动 */
+    .clearfix:before,.clearfix:after{content:"";display:table}
+    .clearfix:after{clear:both;}
+    .clearfix{zoom:1}
+    </style>
+    <script>
+        {#添加商品到购物车#}
+        function send_cart_add(){
+            num = parseInt($("#num_show").val());
+            $.get("/cart/add/{{ goods.id }}/" +num + "",
+            function (data) {
+                if (data){
+                    $('#show_count').text(data.cart_count)
+                }
+            })
+        }
+
+        $(function () {
+            $("#add_cart").click(function () {
+                send_cart_add();
+            });
+
+            $("#num_show").blur(function () {
+               num = parseInt($("#num_show").val());
+               price =$("#price").text(); // 取出商品的单价
+               total = num * price; // 计算商品的总价
+
+                $("#goods_total").text(total.toFixed(2));
+            });
+
+            // 手动输入商品的数量
+            {#$('.num_show').blur(function () {#}
+            {#    // 获取用户输入的数目#}
+            {#    count = $(this).val()#}
+            {#    // 校验count是否合法#}
+            {#    if (isNaN(count) || count.trim().length==0 || parseInt(count) <=0){#}
+            {#        count = 1#}
+            {#    }#}
+            {#    // 重新设置商品的数目#}
+            {#    $(this).val(parseInt(count))#}
+            {#    // 更新商品的总价#}
+            {#    update_goods_amount()#}
+            //})
+            $("#add").click(function () {
+                num = parseInt($("#num_show").val());
+                $("#num_show").val(num+1);
+                $("#num_show").blur();
+            });
+
+            $("#minus").click(function () {
+                num = parseInt($("#num_show").val());
+                if(num>1){
+                $("#num_show").val(num-1);
+                }
+                $("#num_show").blur();
+            });
+        })
+
+    </script>
+{% endblock %}
+
+{% block cart %}
+    <div class="search_bar clearfix">
+		<a href="{% url 'index' %}" class="logo fl"><img src="/static/images/logo02.png"></a>
+		<div class="sub_page_name fl"></div>
+		<div class="search_con fl">
+			<form action="{% url 'goods:search_detail' %}" method="get">
+                {% csrf_token %}
+                <input type="text" class="input_text fl" name="search" placeholder="搜索商品">
+			    <input type="submit" class="input_btn fr" name="" value="搜索">
+            </form>
+		</div>
+{#    购物车展示框#}
+        <div class="guest_cart fr">
+            <a href="{% url 'cart:cart' %}" class="cart_name fl">我的购物车</a>
+            <div class="goods_count fr" id="show_count">{{ cart_count }}</div>
+        </div>
+	</div>
+{% endblock %}
+
+{% block category %}
+    {% for category in categorys %}
+        <li><a href="{% url 'goods:list' category.id 'default' 1 %}" >{{ category.category_name }}</a></li>
+    {% endfor %}
+{% endblock %}
+
+{% block content %}
+	<div class="breadcrumb">
+		<a href="{% url 'index' %}">全部分类</a>
+		<span>></span>
+		<a href="{% url 'goods:list' goods.category.id 'default' 1 %}">{{ goods.category.category_name }}</a>
+		<span>></span>
+		<a href="{% url 'goods:detail' goods.id %}">商品详情</a>
+	</div>
+
+	<div class="goods_detail_con clearfix">
+		<div class="goods_detail_pic fl"><img src="{{ goods.pic.url }}" style="height: 350px;width: 350px;"></div>
+
+		<div class="goods_detail_list fr">
+			<h3>{{ goods.goods_name }}</h3>
+			<p>{{ goods.abstract }}</p>
+			<div class="prize_bar">
+				<span class="show_pirze">¥<em id="price">{{ goods.price }}</em></span>
+				<span class="show_unit">单  位：{{ goods.unit }}g</span>
+			</div>
+			<div class="goods_num clearfix">
+				<div class="num_name fl">数 量：</div>
+				<div class="num_add fl">
+					<input type="text" class="num_show fl" value="1" id="num_show">
+					    <a href="javascript:;" class="add fr" id="add">+</a>
+					    <a href="javascript:;" class="minus fr" id="minus">-</a>
+				</div>
+			</div>
+			<div class="total">总价：<em id="goods_total">{{ goods.price }}</em>元</div>
+			<div class="operate_btn">
+				<a href="{% url 'order:order' goods.id %}" class="buy_btn" id="buy_btn">立即购买</a>
+				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>
+			</div>
+		</div>
+	</div>
+
+	<div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_goods">
+				<h3>新品推荐</h3>
+				<ul>
+                    {% for new in news %}
+					<li>
+						<a href="{% url 'goods:detail' new.id %}"><img src="{{ new.pic.url }}"></a>
+						<h4><a href="{% url 'goods:detail' new.id %}">{{ new.goods_name }}</a></h4>
+						<div class="prize">￥{{ new.price }}</div>
+					</li>
+                    {% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="r_wrap fr clearfix">
+			<ul class="detail_tab clearfix">
+				<li class="active">商品介绍</li>
+				<li>评论</li>
+			</ul>
+
+			<div class="tab_content">
+				<dl>
+					<dt>商品详情：</dt>
+					<dd>{{ goods.desc|safe }}</dd>
+				</dl>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}
