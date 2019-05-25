@@ -85,9 +85,9 @@ WSGI_APPLICATION = 'dailyfresh.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "shuiguo",
-        'USER': "root",
-        'PASSWORD': "123456",
+        'NAME': "shiuguo",
+        'USER': "xxxx",
+        'PASSWORD': "xxxxx",
         'HOST': "127.0.0.1",
         'PORT': 3306,
         # 取消映射检查
